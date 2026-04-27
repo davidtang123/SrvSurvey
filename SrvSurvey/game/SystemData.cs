@@ -25,7 +25,18 @@ namespace SrvSurvey.game
         /// </summary>
         public static SystemData? Load(string systemName, long systemAddress, string fid, string? commanderName, bool skipPredictSpecies = false)
         {
-            if (systemName != "") Game.log($"Loading SystemData for: '{systemName}' ({systemAddress})");
+            var systemFileName = systemName
+                .Replace("\\", "-")
+                .Replace("/", "-")
+                .Replace(":", "-")
+                .Replace("*", "-")
+                .Replace("?", "-")
+                .Replace("\"", "-")
+                .Replace("<", "-")
+                .Replace(">", "-")
+                .Replace("|", "-");
+
+            if (systemFileName != "") Game.log($"Loading SystemData for: '{systemFileName}' ({systemAddress})");
 
             // use cache entry if present
             if (systemAddress != 0 && cache.TryGetValue(systemAddress, out SystemData? value))
@@ -35,20 +46,20 @@ namespace SrvSurvey.game
             var folder = Path.Combine(Program.dataFolder, "systems", fid);
             Directory.CreateDirectory(folder);
             var files = Directory.GetFiles(folder, $"*_{systemAddress}.json");
-            if (files.Length == 0 && !string.IsNullOrEmpty(systemName))
+            if (files.Length == 0 && !string.IsNullOrEmpty(systemFileName))
             {
-                files = Directory.GetFiles(folder, $"{systemName}_*.json");
+                files = Directory.GetFiles(folder, $"{systemFileName}_*.json");
             }
 
             // create new if no matches found
             if (files.Length == 0)
             {
-                if (systemName != "") Game.log($"Nothing found for: '{systemName}' ({systemAddress})");
+                if (systemFileName != "") Game.log($"Nothing found for: '{systemFileName}' ({systemAddress})");
                 return null;
             }
             else if (files.Length > 1)
             {
-                Game.log($"Why are there {files.Length} multiple files for '{systemName}' ({systemAddress})? Using the first one.");
+                Game.log($"Why are there {files.Length} multiple files for '{systemFileName}' ({systemAddress})? Using the first one.");
             }
 
             var filepath = files[0];
