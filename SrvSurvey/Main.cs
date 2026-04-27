@@ -748,9 +748,10 @@ namespace SrvSurvey
                 btnRuinsMap.Enabled = false;
                 btnRuinsOrigin.Enabled = false;
             }
-            else if (Game.settings.enableGuardianSites)
+
+            if (Game.settings.enableGuardianSites)
             {
-                if (this.game.systemSite != null)
+                if (this.game?.systemSite != null)
                 {
                     var allowed = PlotGuardians.allowed(game);
                     btnRuinsMap.Enabled = game.systemSite.siteHeading != -1 && allowed;
@@ -1898,6 +1899,13 @@ namespace SrvSurvey
         private void menuColonizeWiki_Click(object sender, EventArgs e)
         {
             Util.openLink("https://github.com/njthomson/SrvSurvey/wiki/Colonization");
+        }
+
+        private void txtVehicle_Click(object sender, EventArgs e)
+        {
+            // generate slef for the current ship
+            // TODO: Not ready yet
+            //var json = Game.generateShipBuildJsonForSpansh();
         }
 
         private void btnRamTah_Click(object sender, EventArgs e)

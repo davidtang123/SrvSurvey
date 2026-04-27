@@ -123,6 +123,7 @@ namespace SrvSurvey.forms
         private void showDebug()
         {
             txtJson.ReadOnly = false;
+            if (pq == null) return;
 
             selectedView = comboChapter.SelectedItem as string;
             var chapter = getSelectedChapter(selectedView);
@@ -219,6 +220,13 @@ namespace SrvSurvey.forms
 
         private void btnLoad_Click(object sender, EventArgs e)
         {
+            if (ModifierKeys.HasFlag(Keys.Shift))
+            {
+                cmdrPlay.devRef = null;
+                cmdrPlay.devQuest = null;
+                cmdrPlay.Save(true);
+            }
+
             var folder = cmdrPlay.devQuest?.watchFolder;
 
             if (folder == null)

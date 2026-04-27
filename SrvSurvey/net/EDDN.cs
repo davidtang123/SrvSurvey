@@ -13,6 +13,7 @@ namespace SrvSurvey.net
         public static UploadPayloadHeader? header;
         private static HttpClient client;
         private static string useEnv = "dev";
+        private static bool logAllUploads;
         private static Dictionary<string, string> urls = new()
         {
             { "dev", "https://dev.eddn.edcd.io:4432/upload/" },
@@ -30,6 +31,16 @@ namespace SrvSurvey.net
         {
             if (!Game.settings.eddnUpload || EDDN.header == null) return;
 
+            if (logAllUploads)
+            {
+                Game.log($"Send to EDDN: {message.Value<string>("event")}\r\n" + JsonConvert.SerializeObject(new JObject
+                {
+                    ["$schemaRef"] = schemaRef,
+                    ["header"] = JObject.FromObject(EDDN.header!),
+                    ["message"] = message,
+                }, Formatting.Indented));
+            }
+
             var payload = JsonConvert.SerializeObject(new JObject
             {
                 ["$schemaRef"] = schemaRef,
@@ -37,13 +48,18 @@ namespace SrvSurvey.net
                 ["message"] = message,
             });
             var url = urls[Game.settings.eddnEnvironment ?? useEnv];
-            var response = await client.PostAsync(url, new StringContent(payload, Encoding.UTF8, "application/json"));
+            if (url != urls["live"]) schemaRef += "/test";
 
-            Game.log($"EDDN upload response: {response.StatusCode} : {response.ReasonPhrase}");
+            if (DateTime.Now.Year > 3000)
+            {
+                var response = await client.PostAsync(url, new StringContent(payload, Encoding.UTF8, "application/json"));
 
-            var body = await response.Content.ReadAsStringAsync();
-            if (!response.IsSuccessStatusCode)
-                Game.log($"EDDN.upload: failed: payload:\r\n{payload}\r\nbody:\r\n{body}");
+                Game.log($"EDDN upload response: {response.StatusCode} : {response.ReasonPhrase}");
+
+                var body = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                    Game.log($"EDDN.upload: failed: payload:\r\n{payload}\r\nbody:\r\n{body}");
+            }
         }
 
         private void trim(JObject obj, params List<string> names)
@@ -53,9 +69,9 @@ namespace SrvSurvey.net
                 if (name.StartsWith("*"))
                 {
                     // remove anything ending with the given name
-                    foreach (var x in obj)
-                        if (x.Key.EndsWith(name.Substring(1)))
-                            obj.Remove(x.Key);
+                    foreach (var x in obj.Properties().ToList())
+                        if (x.Name.EndsWith(name.Substring(1)))
+                            obj.Remove(x.Name);
                 }
                 else
                 {
@@ -79,20 +95,20 @@ namespace SrvSurvey.net
             }
         }
 
-        public void onJournalEntry(Game game, IJournalEntry entry) { /* ignore */ }
+        public void onJournalEntry(Game game, IJournalEntry entry, JObject raw) { /* ignore */ }
 
-        public void onJournalEntry(Game game, CodexEntry entry)
+        public void onJournalEntry(Game game, CodexEntry _, JObject raw)
         {
-            if (entry.SystemAddress != game.systemData?.address || game.journals == null) return;
+            if (raw.Value<long>("SystemAddress") != game.systemData?.address || game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(entry);
+            var message = new JObject(raw);
 
             // trim (BodyID will be put back below if conditions are met)
             trim(message, "*_Localised", nameof(CodexEntry.BodyID), nameof(CodexEntry.IsNewEntry), nameof(CodexEntry.NewTraitsDiscovered));
 
             // augment
-            message["StarSystem"] = entry.System;
+            message["StarSystem"] = raw.Value<string>("System");
             message["StarPos"] = new JArray(game.systemData.starPos);
             if (game.journals.isGameOdyssey.HasValue) message["odyssey"] = game.journals.isGameOdyssey.Value;
             if (game.journals.isGameHorizons.HasValue) message["horizons"] = game.journals.isGameHorizons.Value;
@@ -103,19 +119,19 @@ namespace SrvSurvey.net
                 message["BodyName"] = game.status.BodyName;
 
                 // Set BodyID only if it matches our tracked body and that name matches status.json
-                if (entry.BodyID == game.systemBody.id)
+                if (raw.Value<int>("BodyID") == game.systemBody.id)
                     message["BodyID"] = game.systemBody.id;
             }
 
             upload(message, "https://eddn.edcd.io/schemas/codexentry/1").justDoIt();
         }
 
-        public void onJournalEntry(Game game, ApproachSettlement entry)
+        public void onJournalEntry(Game game, ApproachSettlement _, JObject raw)
         {
-            if (entry.SystemAddress != game.systemData?.address || game.journals == null) return;
+            if (raw.Value<long>("SystemAddress") != game.systemData?.address || game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(entry);
+            var message = new JObject(raw);
 
             // trim
             trim(message, "*_Localised");
@@ -129,9 +145,9 @@ namespace SrvSurvey.net
             upload(message, "https://eddn.edcd.io/schemas/approachsettlement/1").justDoIt();
         }
 
-        public void onJournalEntry(Game game, Market entry)
+        public void onJournalEntry(Game game, Market _, JObject raw)
         {
-            if (entry.StarSystem != game.systemData?.name || game.journals == null) return;
+            if (raw.Value<string>("StarSystem") != game.systemData?.name || game.journals == null) return;
             var marketFile = game.marketFile;
             if (marketFile.Items.Count == 0) return;
 
@@ -156,12 +172,12 @@ namespace SrvSurvey.net
             //upload(message, "https://eddn.edcd.io/schemas/commodity/3").justDoIt();
         }
 
-        public void onJournalEntry(Game game, DockingGranted entry)
+        public void onJournalEntry(Game game, DockingGranted _, JObject raw)
         {
             if (game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(entry);
+            var message = new JObject(raw);
 
             // augment
             if (game.journals.isGameOdyssey.HasValue) message["odyssey"] = game.journals.isGameOdyssey.Value;
@@ -170,12 +186,12 @@ namespace SrvSurvey.net
             upload(message, "https://eddn.edcd.io/schemas/dockinggranted/1").justDoIt();
         }
 
-        public void onJournalEntry(Game game, DockingDenied entry)
+        public void onJournalEntry(Game game, DockingDenied _, JObject raw)
         {
             if (game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(entry);
+            var message = new JObject(raw);
 
             // augment
             if (game.journals.isGameOdyssey.HasValue) message["odyssey"] = game.journals.isGameOdyssey.Value;
@@ -184,12 +200,12 @@ namespace SrvSurvey.net
             upload(message, "https://eddn.edcd.io/schemas/dockingdenied/1").justDoIt();
         }
 
-        public void onJournalEntry(Game game, FSSAllBodiesFound entry)
+        public void onJournalEntry(Game game, FSSAllBodiesFound _, JObject raw)
         {
-            if (entry.SystemAddress != game.systemData?.address || game.journals == null) return;
+            if (raw.Value<long>("SystemAddress") != game.systemData?.address || game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(entry);
+            var message = new JObject(raw);
 
             // augment
             message["StarPos"] = new JArray(game.systemData.starPos);
@@ -199,12 +215,12 @@ namespace SrvSurvey.net
             upload(message, "https://eddn.edcd.io/schemas/fssallbodiesfound/1").justDoIt();
         }
 
-        public void onJournalEntry(Game game, FSSBodySignals entry)
+        public void onJournalEntry(Game game, FSSBodySignals _, JObject raw)
         {
-            if (entry.SystemAddress != game.systemData?.address || game.journals == null) return;
+            if (raw.Value<long>("SystemAddress") != game.systemData?.address || game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(entry);
+            var message = new JObject(raw);
 
             // trim
             trim(message, "*_Localised");
@@ -218,12 +234,12 @@ namespace SrvSurvey.net
             upload(message, "https://eddn.edcd.io/schemas/fssbodysignals/1").justDoIt();
         }
 
-        public void onJournalEntry(Game game, FSSDiscoveryScan entry)
+        public void onJournalEntry(Game game, FSSDiscoveryScan _, JObject raw)
         {
-            if (entry.SystemAddress != game.systemData?.address || game.journals == null) return;
+            if (raw.Value<long>("SystemAddress") != game.systemData?.address || game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(entry);
+            var message = new JObject(raw);
 
             // trim
             trim(message, "*_Localised", nameof(FSSDiscoveryScan.Progress));
@@ -236,14 +252,14 @@ namespace SrvSurvey.net
             upload(message, "https://eddn.edcd.io/schemas/fssdiscoveryscan/1").justDoIt();
         }
 
-        public void onJournalEntry(Game game, FSSSignalDiscovered entry)
+        public void onJournalEntry(Game game, FSSSignalDiscovered entry, JObject raw)
         {
-            if (entry.SystemAddress != game.systemData?.address || game.journals == null) return;
+            if (raw.Value<long>("SystemAddress") != game.systemData?.address || game.journals == null) return;
 
             // TODO: ... batching ...
 
             //// serialize
-            //var message = JObject.FromObject(entry);
+            //raw.Value<long>("SystemAddress")
 
             //// trim
             //trim(message, "*_Localised", nameof(FSSDiscoveryScan.Progress));
@@ -256,12 +272,12 @@ namespace SrvSurvey.net
             //upload(message, "https://eddn.edcd.io/schemas/fsssignaldiscovered/1").justDoIt();
         }
 
-        public void onJournalEntry(Game game, NavBeaconScan entry)
+        public void onJournalEntry(Game game, NavBeaconScan _, JObject raw)
         {
-            if (entry.SystemAddress != game.systemData?.address || game.journals == null) return;
+            if (raw.Value<long>("SystemAddress") != game.systemData?.address || game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(entry);
+            var message = new JObject(raw);
 
             // augment
             message["StarSystem"] = game.systemData.name;
@@ -272,12 +288,12 @@ namespace SrvSurvey.net
             upload(message, "https://eddn.edcd.io/schemas/navbeaconscan/1").justDoIt();
         }
 
-        public void onJournalEntry(Game game, NavRoute entry)
+        public void onJournalEntry(Game game, NavRoute entry, JObject raw)
         {
             if (game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(game.navRoute);
+            var message = new JObject(raw);
 
             // augment
             if (game.journals.isGameOdyssey.HasValue) message["odyssey"] = game.journals.isGameOdyssey.Value;
@@ -290,12 +306,12 @@ namespace SrvSurvey.net
 
         // TODO: Shipyard ?
 
-        public void onJournalEntry(Game game, ScanBaryCentre entry)
+        public void onJournalEntry(Game game, ScanBaryCentre _, JObject raw)
         {
-            if (entry.SystemAddress != game.systemData?.address || game.journals == null) return;
+            if (raw.Value<long>("SystemAddress") != game.systemData?.address || game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(game.navRoute);
+            var message = new JObject(raw);
 
             // augment
             message["StarPos"] = new JArray(game.systemData.starPos);
@@ -308,12 +324,12 @@ namespace SrvSurvey.net
 
         // The following use the same schemaRef
 
-        public void onJournalEntry(Game game, Docked entry)
+        public void onJournalEntry(Game game, Docked _, JObject raw)
         {
-            if (entry.SystemAddress != game.systemData?.address || game.journals == null) return;
+            if (raw.Value<long>("SystemAddress") != game.systemData?.address || game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(entry);
+            var message = new JObject(raw);
 
             // trim
             trim(message, "*_Localised", nameof(Docked.Wanted), nameof(Docked.ActiveFine), nameof(Docked.CockpitBreach)); // StationEconomyKeys?
@@ -326,12 +342,12 @@ namespace SrvSurvey.net
             upload(message, "https://eddn.edcd.io/schemas/journal/1").justDoIt();
         }
 
-        public void onJournalEntry(Game game, FSDJump entry)
+        public void onJournalEntry(Game game, FSDJump entry, JObject raw)
         {
-            if (entry.SystemAddress != game.systemData?.address || game.journals == null) return;
+            if (raw.Value<long>("SystemAddress") != game.systemData?.address || game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(entry);
+            var message = new JObject(raw);
 
             // trim
             trim(message, "*_Localised", "Wanted", nameof(FSDJump.BoostUsed), nameof(FSDJump.FuelLevel), nameof(FSDJump.FuelUsed), nameof(FSDJump.JumpDist), "HappiestSystem", "HomeSystem", nameof(SystemFaction.MyReputation), "SquadronFaction");
@@ -343,12 +359,12 @@ namespace SrvSurvey.net
             upload(message, "https://eddn.edcd.io/schemas/journal/1").justDoIt();
         }
 
-        public void onJournalEntry(Game game, CarrierJump entry)
+        public void onJournalEntry(Game game, CarrierJump _, JObject raw)
         {
-            if (entry.SystemAddress != game.systemData?.address || game.journals == null) return;
+            if (raw.Value<long>("SystemAddress") != game.systemData?.address || game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(entry);
+            var message = new JObject(raw);
 
             // trim
             trim(message, "*_Localised", "Wanted", nameof(FSDJump.BoostUsed), nameof(FSDJump.FuelLevel), nameof(FSDJump.FuelUsed), nameof(FSDJump.JumpDist), "HappiestSystem", "HomeSystem", nameof(SystemFaction.MyReputation), "SquadronFaction");
@@ -360,12 +376,12 @@ namespace SrvSurvey.net
             upload(message, "https://eddn.edcd.io/schemas/journal/1").justDoIt();
         }
 
-        public void onJournalEntry(Game game, Scan entry)
+        public void onJournalEntry(Game game, Scan _, JObject raw)
         {
-            if (entry.SystemAddress != game.systemData?.address || game.journals == null) return;
+            if (raw.Value<long>("SystemAddress") != game.systemData?.address || game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(entry);
+            var message = new JObject(raw);
 
             // trim
             trim(message, "*_Localised");
@@ -378,12 +394,12 @@ namespace SrvSurvey.net
             upload(message, "https://eddn.edcd.io/schemas/journal/1").justDoIt();
         }
 
-        public void onJournalEntry(Game game, Location entry)
+        public void onJournalEntry(Game game, Location _, JObject raw)
         {
-            if (entry.SystemAddress != game.systemData?.address || game.journals == null) return;
+            if (raw.Value<long>("SystemAddress") != game.systemData?.address || game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(entry);
+            var message = new JObject(raw);
 
             // trim
             trim(message, "*_Localised", "Wanted", nameof(Location.Latitude), nameof(Location.Longitude), "HappiestSystem", "HomeSystem", nameof(SystemFaction.MyReputation), "SquadronFaction");
@@ -395,12 +411,12 @@ namespace SrvSurvey.net
             upload(message, "https://eddn.edcd.io/schemas/journal/1").justDoIt();
         }
 
-        public void onJournalEntry(Game game, SAASignalsFound entry)
+        public void onJournalEntry(Game game, SAASignalsFound entry, JObject raw)
         {
-            if (entry.SystemAddress != game.systemData?.address || game.journals == null) return;
+            if (raw.Value<long>("SystemAddress") != game.systemData?.address || game.journals == null) return;
 
             // serialize
-            var message = JObject.FromObject(entry);
+            var message = new JObject(raw);
 
             // trim
             trim(message, "*_Localised");

@@ -73,14 +73,21 @@ namespace SrvSurvey.game
 
                 // write to a temporary file, then clobber the original
                 var filepathTmp = filepath + ".tmp";
+                if (File.Exists(filepathTmp))
+                {
+                    File.Delete(filepathTmp);
+                    Application.DoEvents();
+                }
                 File.WriteAllText(filepathTmp, json);
+                Application.DoEvents();
                 File.Move(filepathTmp, filepath, true);
+                Application.DoEvents();
             }
             catch (Exception ex)
             {
                 Game.log($"Failed to save: {filepath} (allowRetry:{allowRetry})\r\n\r\n{ex}");
                 if (allowRetry)
-                    Program.defer(() => saveWithRetry(filepath, json, false, checkFolder));
+                    Util.deferAfter(100, () => Program.defer(() => saveWithRetry(filepath, json, false, checkFolder)));
             }
         }
 

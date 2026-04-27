@@ -273,10 +273,14 @@ namespace SrvSurvey
                 Game.log($"Paste in gal-map: {keysToSend}");
 
                 Elite.setFocusED();
+                Application.DoEvents();
+                Application.DoEvents();
                 Program.defer(() =>
                 {
                     try
                     {
+                        Application.DoEvents();
+                        Application.DoEvents();
                         SendKeys.SendWait(keysToSend);
                     }
                     catch { /* ignore */ }

@@ -74,6 +74,7 @@ internal class PlayState : Data
             {
                 // pull quest def from the server
                 pq.quest = await Game.rcc.getQuest(ps.fid, qr.publisher, qr.id, qr.ver);
+                if (pq.quest == null) { Debugger.Break(); continue; }// TODO: maybe throw or warn?
                 await ps.initQuest(pq, false);
             }
 
@@ -178,6 +179,34 @@ internal class PlayState : Data
         this.Save(false);
     }
 
+    private static void setPriorKepts(PlayQuest pq)
+    {
+        if (!pq.keptLasts.ContainsKey(nameof(Docked)))
+        {
+            Game.activeGame?.journals?.walkDeep(true, entry =>
+            {
+                if (entry is Docked)
+                {
+                    pq.keptLasts[nameof(Docked)] = JObject.FromObject(entry);
+                    return true;
+                }
+                return false;
+            });
+        }
+        if (!pq.keptLasts.ContainsKey(nameof(FSDJump)))
+        {
+            Game.activeGame?.journals?.walkDeep(true, entry =>
+            {
+                if (entry is FSDJump)
+                {
+                    pq.keptLasts[nameof(FSDJump)] = JObject.FromObject(entry);
+                    return true;
+                }
+                return false;
+            });
+        }
+    }
+
     private async Task initQuest(PlayQuest pq, bool startFirstChapterAndSave)
     {
         pq.parent = this;
@@ -207,7 +236,7 @@ internal class PlayState : Data
         }
 
         // remove any prior versions
-        this.activeQuests.RemoveAll(x => x.ToString() == pq.ToString());
+        this.activeQuests.RemoveAll(x => x.publisher == pq.publisher && x.id == pq.id);
         this.activeQuests.Add(pq);
 
         if (startFirstChapterAndSave)
@@ -262,7 +291,7 @@ internal class PlayState : Data
         Data.saveWithRetry(questFilepath, questJson, true);
 
         // preserve prior values
-        if (devQuest != null)
+        if (devQuest != null && devQuest.publisher == pq.publisher && devQuest.id == pq.id)
         {
             // preserve state from previous PlayQuest
             foreach (var (k, v) in devQuest.objectives) pq.objectives[k] = v;
@@ -298,34 +327,6 @@ internal class PlayState : Data
 
         PlayState.updateUI(pq);
         return pq;
-    }
-
-    private static void setPriorKepts(PlayQuest pq)
-    {
-        if (!pq.keptLasts.ContainsKey(nameof(Docked)))
-        {
-            Game.activeGame?.journals?.walkDeep(true, entry =>
-            {
-                if (entry is Docked)
-                {
-                    pq.keptLasts[nameof(Docked)] = JObject.FromObject(entry);
-                    return true;
-                }
-                return false;
-            });
-        }
-        if (!pq.keptLasts.ContainsKey(nameof(FSDJump)))
-        {
-            Game.activeGame?.journals?.walkDeep(true, entry =>
-            {
-                if (entry is FSDJump)
-                {
-                    pq.keptLasts[nameof(FSDJump)] = JObject.FromObject(entry);
-                    return true;
-                }
-                return false;
-            });
-        }
     }
 
     private DefMsg parseMsgMd(string filepath)

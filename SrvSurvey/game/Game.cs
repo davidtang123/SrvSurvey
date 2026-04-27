@@ -1106,8 +1106,8 @@ namespace SrvSurvey.game
                     PlotBase2.processJournalEntry(entry);
 
                     // upload to EDDN?
-                    if (!Game.settings.eddnUpload && EDDN.header != null)
-                        eddn.onJournalEntry(this, entry); // <-- TODO: adapt this to use raw
+                    if (Game.settings.eddnUpload && EDDN.header != null)
+                        eddn.onJournalEntry(this, (dynamic)entry, raw);
                 }
 
                 // finally, let active quests know about this
@@ -3677,6 +3677,43 @@ namespace SrvSurvey.game
         }
 
         #endregion
+
+        public static string? generateShipBuildJsonForSpansh()
+        {
+            // TODO: (not ready)
+            var game = Game.activeGame;
+            if (game?.journals == null) return null;
+
+            var entry = game.journals.FindEntryByType<Loadout>(-1, true);
+            if (entry == null) return null;
+
+            var data = JObject.FromObject(entry)!;
+            data["HullValue"] = data.Value<double>("HullHealth");
+            foreach (var n in new[] { "timestamp", "ShipID", "HullHealth" }) data.Remove(n);
+
+            // trim cosmetic modules
+            var modules = data.Value<JArray>("Modules");
+            //foreach(var n in moduleNames)
+            //{
+            //    if ()
+            //}
+            //Game.log(modules);
+            //Game.log("--");
+
+            var obj = JObject.FromObject(new
+            {
+                header = new
+                {
+                    appName = "EDSY",
+                    appVersion = 0,
+                    appUrl = "",
+                },
+                data = data,
+            });
+
+            var json = JsonConvert.SerializeObject(obj);
+            return json;
+        }
     }
 
     class ShipData

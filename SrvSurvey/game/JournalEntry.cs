@@ -165,6 +165,7 @@ namespace SrvSurvey
         public string ShipIDent;
         public double MaxJumpRange;
         public int CargoCapacity;
+        public JArray Modules;
     }
 
     public class Died : JournalEntry
