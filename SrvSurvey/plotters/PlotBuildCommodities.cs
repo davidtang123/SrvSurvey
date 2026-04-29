@@ -257,25 +257,26 @@ namespace SrvSurvey.plotters
             }
 
             // start rendering...
+            var bc = Program.isLinux ? "■" : "🚧";
             if (game.lastColonisationConstructionDepot?.ConstructionComplete == true)
             {
                 headerText = game.lastDocked?.StationName ?? "";
                 headerText = headerText.Substring(headerText.IndexOf(":") + 2);
-                tt.draw("🚧  ", C.Colonise.highlight, GameColors.Fonts.gothic_10);
+                tt.draw(bc + "  ", C.Colonise.highlight, GameColors.Fonts.gothic_10);
                 tt.draw(headerText, GameColors.Fonts.gothic_12B);
-                tt.draw("  🚧", C.Colonise.highlight, GameColors.Fonts.gothic_10);
+                tt.draw("  " + bc, C.Colonise.highlight, GameColors.Fonts.gothic_10);
                 tt.newLine(+N.ten, true);
 
-                tt.draw(N.ten, "☑️ Construction complete ☑️", C.Colonise.surplus, GameColors.Fonts.gothic_10);
+                tt.draw(N.ten, Program.isLinux ? "✓ Construction complete ✓" : "☑️ Construction complete ☑️", C.Colonise.surplus, GameColors.Fonts.gothic_10);
                 tt.newLine(+N.ten, true);
 
                 return tt.pad(+N.ten, +N.ten);
             }
 
             tt.dtx = 10;
-            if (dockedAtConstructionSite) tt.draw("🚧  ", C.Colonise.highlight, GameColors.Fonts.gothic_10);
+            if (dockedAtConstructionSite) tt.draw(bc + "  ", C.Colonise.highlight, GameColors.Fonts.gothic_10);
             tt.draw(headerText, GameColors.Fonts.gothic_12B);
-            if (dockedAtConstructionSite) tt.draw("  🚧", C.Colonise.highlight, GameColors.Fonts.gothic_10);
+            if (dockedAtConstructionSite) tt.draw("  " + bc, C.Colonise.highlight, GameColors.Fonts.gothic_10);
             tt.newLine(+N.four, true);
 
             if (projectNames.Any())
@@ -290,21 +291,22 @@ namespace SrvSurvey.plotters
             tt.dty += N.six;
 
             // show warning if docked at untracked project
+            var wc = Program.isLinux ? "◬" : "⚠️";
             if (dockedAtConstructionSite && !colonyData.has(game.lastDocked))
             {
                 var msg = ColonyData.localUntrackedProject == null
                     ? "Untracked project"
                     : "Not a member of this project";
-                tt.draw(N.ten, "⚠️ ", C.Colonise.highlight, GameColors.Fonts.gothic_10);
+                tt.draw(N.ten, wc + " ", C.Colonise.highlight, GameColors.Fonts.gothic_10);
                 tt.draw(msg, C.cyan, GameColors.Fonts.gothic_10);
-                tt.draw(" ⚠️", C.Colonise.highlight, GameColors.Fonts.gothic_10);
+                tt.draw(" " + wc, C.Colonise.highlight, GameColors.Fonts.gothic_10);
                 tt.newLine(+N.ten, true);
             }
 
             // show warning if docked at an untracked FC
             if (game.lastDocked?.StationEconomy == "$economy_Carrier;" && !game.cmdrColony.linkedFCs.ContainsKey(game.lastDocked.MarketID))
             {
-                tt.draw(N.ten, "⚠️ Untracked Fleet Carrier", C.Colonise.highlight, GameColors.Fonts.gothic_10);
+                tt.draw(N.ten, wc + " Untracked Fleet Carrier", C.Colonise.highlight, GameColors.Fonts.gothic_10);
                 tt.newLine(+N.ten, true);
             }
 
@@ -398,7 +400,7 @@ namespace SrvSurvey.plotters
             if (hasPin)
             {
                 tt.dty += N.eight;
-                tt.draw(N.ten, "📌 Assigned commodities", C.Colonise.itemDark);
+                tt.draw(N.ten, (Program.isLinux ? "◬" : "📌") + " Assigned commodities", C.Colonise.itemDark);
                 tt.newLine(true);
             }
 
@@ -448,7 +450,7 @@ namespace SrvSurvey.plotters
                 {
                     // warn if we have more than needed
                     col = C.Colonise.surplus;
-                    nameTxt += " ✋";
+                    nameTxt += Program.isLinux ? " ◬" : " ✋";
                 }
                 else if (cargoCount == needCount)
                 {
@@ -519,11 +521,11 @@ namespace SrvSurvey.plotters
                 if (isPending)
                     tt.draw(N.two, "►", C.cyan, ff);
                 else if (shipHasEnough || fcHasEnough)
-                    tt.draw(N.two, "✔️", shipHasEnough ? C.Colonise.surplus : C.greenDark, ff);
+                    tt.draw(N.two, Program.isLinux ? "✓" : "✔️", shipHasEnough ? C.Colonise.surplus : C.greenDark, ff);
 
                 // draw assigned pin behind the need number
                 if (needs.assigned.Contains(name))
-                    tt.draw(xNeed, "📌", col, ff);
+                    tt.draw(xNeed, Program.isLinux ? "◬" : "📌", col, ff);
 
                 tt.dtx = this.width - N.twenty;
 
@@ -569,7 +571,7 @@ namespace SrvSurvey.plotters
                 tt.draw(N.ten, cargoTypeTxt, collapseGroup ? C.greenDark : C.orangeDark, GameColors.Fonts.gothic_10);
 
                 if (collapseGroup)
-                    tt.draw("  ✔️", C.greenDark, GameColors.Fonts.gothic_10);
+                    tt.draw(Program.isLinux ? "  ✓" : "  ✔️", C.greenDark, GameColors.Fonts.gothic_10);
 
                 var lx = (int)tt.dtx + N.eight;
                 var ly = (int)tt.dty + N.one + Util.centerIn(szBigNumbers.Height, 2);
@@ -618,7 +620,7 @@ namespace SrvSurvey.plotters
                     {
                         // warn if we have more than needed
                         col = C.Colonise.surplus;
-                        nameTxt += " ✋";
+                        nameTxt += Program.isLinux ? " ◬" : " ✋";
                     }
                     else if (cargoCount == needCount)
                     {
@@ -715,10 +717,10 @@ namespace SrvSurvey.plotters
 
                     // draw assigned pin behind the need number
                     if (needs.assigned.Contains(name))
-                        tt.draw(xNeed, "📌", col, ff);
+                        tt.draw(xNeed, Program.isLinux ? "◬" : "📌", col, ff);
 
                     if (almost)
-                        nameTxt += " 🏁";
+                        nameTxt += Program.isLinux ? " ◈" : " 🏁";
 
                     // render the name
                     var sz2 = tt.draw(N.twenty, nameTxt, col, ff)
@@ -727,7 +729,7 @@ namespace SrvSurvey.plotters
                     if (isPending)
                         tt.draw(N.two, "►", C.cyan, ff);
                     else if (haveEnough && !nameTxt.EndsWith("❌"))
-                        tt.draw(N.two, "✔️", col == C.Colonise.surplus ? C.Colonise.surplus : C.Colonise.surplusDark, ff);
+                        tt.draw(N.two, Program.isLinux ? "✓" : "✔️", col == C.Colonise.surplus ? C.Colonise.surplus : C.Colonise.surplusDark, ff);
 
                     tt.newLine(true);
                 }

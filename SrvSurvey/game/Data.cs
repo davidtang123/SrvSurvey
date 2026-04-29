@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Diagnostics;
 using System.Text;
 
 namespace SrvSurvey.game
@@ -18,7 +19,7 @@ namespace SrvSurvey.game
             // read and parse file contents into tmp object
             if (File.Exists(filepath))
             {
-                var json = Data.openSharedStreamReader(filepath).ReadToEnd();
+                var json = Data.readToEndShared(filepath);
                 //var json = File.ReadAllText(filepath);
                 if (string.IsNullOrEmpty(json))
                 {
@@ -76,24 +77,32 @@ namespace SrvSurvey.game
                 if (File.Exists(filepathTmp))
                 {
                     File.Delete(filepathTmp);
-                    Application.DoEvents();
                 }
+                //Game.log($"Writing: {filepathTmp}");
                 File.WriteAllText(filepathTmp, json);
-                Application.DoEvents();
+                //Game.log($"Moving: {filepathTmp} => {filepath}");
                 File.Move(filepathTmp, filepath, true);
-                Application.DoEvents();
             }
             catch (Exception ex)
             {
                 Game.log($"Failed to save: {filepath} (allowRetry:{allowRetry})\r\n\r\n{ex}");
                 if (allowRetry)
-                    Util.deferAfter(100, () => Program.defer(() => saveWithRetry(filepath, json, false, checkFolder)));
+                    Program.defer(() => saveWithRetry(filepath, json, false, checkFolder));
+                else
+                    Debugger.Break(); // Will this keep happening?
             }
         }
 
         public static StreamReader openSharedStreamReader(string filepath)
         {
             return new StreamReader(new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
+        }
+
+        /// <summary> Read to end of file using a shared read access StreamReader </summary>
+        public static string readToEndShared(string filepath)
+        {
+            using var reader = Data.openSharedStreamReader(filepath);
+            return reader.ReadToEnd();
         }
     }
 

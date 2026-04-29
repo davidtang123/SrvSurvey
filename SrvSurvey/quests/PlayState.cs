@@ -385,8 +385,11 @@ internal class PlayState : Data
             case "ShipLocker":
             case "Shipyard":
             case "FCMaterials":
-                raw = JObject.Load(new JsonTextReader(Data.openSharedStreamReader(Path.Combine(Game.settings.watchedJournalFolder, $"{eventName}.json"))));
-                break;
+                {
+                    using var reader = new JsonTextReader(Data.openSharedStreamReader(Path.Combine(Game.settings.watchedJournalFolder, $"{eventName}.json")));
+                    raw = await JObject.LoadAsync(reader);
+                    break;
+                }
         }
 
         var tbl = raw.toTbl();
