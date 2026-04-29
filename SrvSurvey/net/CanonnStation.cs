@@ -256,11 +256,11 @@ namespace SrvSurvey.canonn
                             Game.canonn.submitStation(station).ContinueWith(response =>
                             {
                                 Game.log("canonn.submitStation: " + response.Result);
-                                Program.invalidateActivePlotters();
+                                PlotBase2.renderAll(null, true);
                             });
                         }
 
-                        PlotBase2.invalidate(nameof(PlotHumanSite));
+                        PlotBase2.renderAll(null, true);
                         return true;
                     }
                     else
