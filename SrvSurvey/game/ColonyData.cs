@@ -689,6 +689,9 @@ namespace SrvSurvey.game
                 });
             }
 
+            // re-order bodies by num
+            bods = bods.OrderBy(b => b.num).ToList();
+
             // remove and re-inject asteroid clusters based on their distLS values
             adjustAstroidBeltOrder(bods);
 

@@ -1788,7 +1788,10 @@ namespace SrvSurvey
 
         private void menuRavenColonial_Click(object sender, EventArgs e)
         {
-            Util.openLink($"{RavenColonial.uxUri}/");
+            if (game?.systemData != null)
+                Util.openLink($"{RavenColonial.uxUri}/#sys={game.systemData.address}");
+            else
+                Util.openLink($"{RavenColonial.uxUri}");
         }
 
         private void menuUpdateSystem_Click(object sender, EventArgs e)
