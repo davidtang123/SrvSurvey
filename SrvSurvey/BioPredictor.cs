@@ -728,7 +728,7 @@ namespace BioCriterias
                 /* New places to try */
                 147547244739, //     Outorst OC-M d7-4         - Elysian Shore
                 79347697283, //      Cyoidai VI-B d2           - Sanguineous Rim
-                /*8084881608371,*/ //    Graea Hypue IS-R d5-235   - Norma Expanse // legacy in atmosphere :/ fails to predict brain tree's - this is on purpose
+                8084881608371, //    Graea Hypue IS-R d5-235   - Norma Expanse
                 37790682707, //      Bleae Phlai AK-I d9-1     - Errant Marches
                 10887906389, //      Eor Audst LM-W f1-20      - Odin's Hold
                 234056927058952, //  Phroi Pri GM-W a1-13      - Galactic Centre
@@ -878,7 +878,8 @@ namespace BioCriterias
                 979198957068914, //Ogairy FI-B c13-3562: should predict Sinuous Tubers
                 12180091181338, //NGC 6357 Sector AV-Y c44: should not predict Sinuous Tubers
 
-                1385689025315, //Blau Eur NI-T d3-40 B 6: misidentifies star as K instead of N
+                1385689025315, //Blau Eur NI-T d3-40 B 6: misidentifies star as N instead of K
+                1625351409307, //Graea Hypue IL-W d2-47: 1, 5a, and 10a should predict brain trees, 10a has atmosphere; should not predict Sinuous Tubers
             };
         }
 

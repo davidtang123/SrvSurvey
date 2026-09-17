@@ -336,6 +336,18 @@ In this example:
 - Nitrogen rocky has a surface temperature of 42K-260K.
 - Nitrogen HMC has a surface temperature of 43.9K-316K.
 
+- No atmosphere icy is 0.02g-7.59g.
+- No atmosphere rocky ice is 0.03g-6.60g.
+- No atmosphere rocky is 0.02g-8.74g.
+- No atmosphere HMC is 0.03g-14.99g.
+- No atmosphere Metal-rich is 0.03g-12.74g.
+- All No atmosphere have a pressure of 0atm-0.001atm
+- No atmosphere icy has a surface temperature of 0K-2072K.
+- No atmosphere rocky ice has a surface temperature of 0K-2020K.
+- No atmosphere rocky has a surface temperature of 0K-2159K.
+- No atmosphere HMC has a surface temperature of 0K-3435K.
+- No atmosphere Metal-rich has a surface temperature of 48.99K-10206K.
+
 - Oxygen icy is 0.23g-0.45g.
 - Oxygen rocky ice is 0.28g-0.50g.
 - Oxygen rocky is 0.35g-0.73g.
