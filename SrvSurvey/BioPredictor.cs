@@ -50,10 +50,10 @@ namespace BioCriterias
 
             // calculate relative brightness for all parent stars
             var parentsByBrightness = body.system.getParentStars(body, false)
-                .ToDictionary(s => s, s => body.getRelativeBrightness(s))
+                .Select(s => new KeyValuePair<SystemBody, double>(s, body.getRelativeBrightness(s)))
                 .Where(s => s.Value > 0)
                 .OrderByDescending(s => s.Value)
-                .ToDictionary(_ => _.Key, _ => _.Value);
+                .ToList();
             if (!BioPredictor.runningBioTests || BioPredictor.logOrganism != "")
                 Game.log($"Radiant stars for '{body.name}': \r\n" + string.Join("\r\n", parentsByBrightness.Select(_ => $"  > {_.Key.shortName} ({_.Key.starType}) : {_.Value}")) + "\r\n");
 
@@ -65,14 +65,14 @@ namespace BioCriterias
             }
 
             // take the 1st brightest parent star
-            var brightest = parentsByBrightness.First();
+            var brightest = parentsByBrightness[0];
             var parentStarTypes = new List<string>();
             parentStarTypes.Add(Util.flattenStarType(brightest.Key.starType));
 
             // consider the 2nd if the type is different but the value is really close
             if (parentsByBrightness.Count > 1)
             {
-                var nextBrightest = parentsByBrightness.Skip(1).First();
+                var nextBrightest = parentsByBrightness[1];
                 var nextBrightestType = Util.flattenStarType(nextBrightest.Key.starType);
                 if (parentStarTypes[0] != nextBrightestType)
                 {
@@ -96,6 +96,29 @@ namespace BioCriterias
             bool withinGuardianBubble = Game.codexRef.isWithinGuardianBubble(body.system.starPos);
             // calc distance to nearest Tubers bubble
             bool withinTubersBubble = Game.codexRef.isWithinTubersBubble(body.system.starPos);
+
+            bool hasWaterPlanet = false;
+            bool hasAmmoniaPlanet = false;
+            var starCodes = new HashSet<string>();
+
+            foreach (var b in body.system.bodies)
+            {
+                var pc = b.planetClass;
+                if (pc != null)
+                {
+                    //Identify if the system contains a GG with water-based life, water giant, water world or earthlike world
+                    if (!hasWaterPlanet &&
+                            (pc.Contains("Water", StringComparison.OrdinalIgnoreCase) ||
+                             pc.StartsWith("Earth", StringComparison.OrdinalIgnoreCase)))
+                        hasWaterPlanet = true;
+                    //Ammonia world, or GG with ammonia life
+                    if (!hasAmmoniaPlanet &&
+                            pc.Contains("Ammonia", StringComparison.OrdinalIgnoreCase))
+                        hasAmmoniaPlanet = true;
+                }
+                if (b.type == SystemBodyType.Star && !string.IsNullOrEmpty(b.starType))
+                    starCodes.Add(Util.flattenStarType(b.starType));
+            }
 
             // when there is a single entry - force that atmosphereComposition to 100% 
             var atmosphereComposition = body.atmosphereComposition?.ToDictionary(x => x.Key, x => x.Value);
@@ -124,6 +147,9 @@ namespace BioCriterias
                 { "Nebulae", body.system.nebulaDist },
                 { "Guardian", withinGuardianBubble.ToString() },
                 { "Tubers", withinTubersBubble.ToString() },
+                { "HasWaterPlanet", hasWaterPlanet.ToString() },
+                { "HasWaterOrAmmoniaPlanet", (hasWaterPlanet || hasAmmoniaPlanet).ToString() },
+                { "HasStar", starCodes },
 
             };
             var predictor = new BioPredictor(body.name, bodyProps, targetVariant);
@@ -131,7 +157,7 @@ namespace BioCriterias
             // add known genus and species names
             if (body.organisms?.Count > 0)
             {
-                foreach (var org in body.organisms.ToList())
+                foreach (var org in body.organisms)
                 {
                     if (org.genus != null)
                     {
@@ -880,6 +906,9 @@ namespace BioCriterias
 
                 1385689025315, //Blau Eur NI-T d3-40 B 6: misidentifies star as N instead of K
                 1625351409307, //Graea Hypue IL-W d2-47: 1, 5a, and 10a should predict brain trees, 10a has atmosphere; should not predict Sinuous Tubers
+                2415642185371, //Graea Hypue HQ-W d2-70: brain trees on planet 1
+
+                663228403355, //Graea Hypue FL-W d2-19: Should not predict lindgoticum brain trees
             };
         }
 

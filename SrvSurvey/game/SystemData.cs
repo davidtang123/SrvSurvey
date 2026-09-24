@@ -2330,12 +2330,12 @@ namespace SrvSurvey.game
 
             var dist1 = this.euclidianDistance(commonParent);
             var dist2 = star.euclidianDistance(commonParent);
-            var dist = Math.Pow(dist1 + dist2, 0.5);
+            var distSquared = dist1 + dist2;
             if (!BioPredictor.runningBioTests)
-                Game.log($"Euclidian distance from {this.name} to {star.name}: {dist}");
-            var temp2 = Math.Pow(star.surfaceTemperature, 2);
-            var sqrtWat = (double)star.radius * temp2 / dist;
-            return Math.Pow(sqrtWat, 2);
+                Game.log($"Euclidian distance from {this.name} to {star.name}: {Math.Sqrt(distSquared)}");
+            var temp2 = star.surfaceTemperature * star.surfaceTemperature;
+            var radiusTemp2 = (double)star.radius * temp2;
+            return radiusTemp2 * radiusTemp2 / distSquared;
         }
 
         public SystemBody? getCommonParent(SystemBody sibling)

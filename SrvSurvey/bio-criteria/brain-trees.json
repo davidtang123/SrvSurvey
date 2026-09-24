@@ -82,7 +82,8 @@
         "  gravity [0.042 ~ 0.37]",
         "     temp [200 ~ 330]",
         "volcanism [Metallic Magma,Minor Metallic Magma,Minor Rocky Magma,Minor Silicate Vapour Geysers,Minor Water Magma]",
-        "  regions [BrainTreeBatch]"
+        "  regions [BrainTreeBatch]",
+        "hasWaterPlanet [true]"
       ]
     },
 
@@ -142,7 +143,8 @@
         "  gravity [ ~ 0.4]",
         "     temp [100 ~ 245]",
         "volcanism [Major Rocky Magma,Major Silicate Vapour Geysers,Major Water Geysers,Major Water Magma,Metallic Magma,Minor Carbon Dioxide Geysers,Minor Metallic Magma,Minor Rocky Magma,Minor Silicate Vapour Geysers,Minor Water Geysers,Rocky Magma,Water Geysers]",
-        "  regions [BrainTreeBatch]"
+        "  regions [BrainTreeBatch]",
+        "hasWaterPlanet [true]"
       ]
     },
 
@@ -164,7 +166,8 @@
       "species": "Aureum Brain Tree",
       "query": [
         "# hit count: 313",
-        "  regions [BrainTreeBatch]"
+        "  regions [BrainTreeBatch]",
+        "hasWaterPlanet [true]"
       ],
       "children": [
         {
@@ -197,7 +200,8 @@
       "species": "Puniceum Brain Tree",
       "query": [
         "# hit count: 1590",
-        "  regions [9,10,35]"
+        "  regions [9,10,35]",
+        "hasWaterPlanet [true]"
       ],
       "children": [
         {
@@ -243,7 +247,8 @@
       "query": [
         "# hit count: 35",
         "atmosType [None]",
-        "  regions [BrainTreeBatch]"
+        "  regions [BrainTreeBatch]",
+        "hasWaterPlanet [true]"
       ],
       "children": [
         {
