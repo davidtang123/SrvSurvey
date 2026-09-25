@@ -563,6 +563,75 @@ namespace SrvSurvey.game
 
         #endregion
 
+        #region bio prediction context cache
+
+        // Per-system water/ammonia/starCodes cache used by BioPredictor.predict().
+
+        [JsonIgnore]
+        private bool _withinGuardianBubble;
+        [JsonIgnore]
+        private bool _withinTubersBubble;
+        [JsonIgnore]
+        private bool _hasWaterPlanet;
+        [JsonIgnore]
+        private bool _hasAmmoniaPlanet;
+        [JsonIgnore]
+        private string? _starCodes;
+
+        public void invalidateBioContext ()
+        {
+            _starCodes = null;//Force system info to be recomputed
+        }
+
+        /// <summary>
+        /// Returns (and lazily computes/caches) whether this system has a water/earthlike planet,
+        /// an ammonia planet, and the distinct set of flattened star type codes present anywhere
+        /// in the system.
+        /// </summary>
+        public (bool withinGuardianBubble, bool withinTubersBubble, bool hasWaterPlanet, bool hasAmmoniaPlanet, string starCodes) getBioContext()
+        {
+            if (this._starCodes == null)
+            {
+                // calc distance to nearest Guardian bubble
+                var withinGuardianBubble = Game.codexRef.isWithinGuardianBubble(this.starPos);
+                // calc distance to nearest Tubers bubble
+                var withinTubersBubble = Game.codexRef.isWithinTubersBubble(this.starPos);
+                var hasWaterPlanet = false;
+                var hasAmmoniaPlanet = false;
+                var starCodes = new List<string>();
+
+                foreach (var b in this.bodies)
+                {
+                    var pc = b.planetClass;
+                    if (pc != null)
+                    {
+                        //Identify if the system contains a GG with water-based life, water giant, water world or earthlike world
+                        if (!hasWaterPlanet &&
+                                (pc.Contains("Water", StringComparison.OrdinalIgnoreCase) ||
+                                    pc.StartsWith("Earth", StringComparison.OrdinalIgnoreCase)))
+                            hasWaterPlanet = true;
+                        //Ammonia world, or GG with ammonia life
+                        if (!hasAmmoniaPlanet &&
+                                pc.Contains("Ammonia", StringComparison.OrdinalIgnoreCase))
+                            hasAmmoniaPlanet = true;
+                    }
+                    if (b.type == SystemBodyType.Star && !string.IsNullOrEmpty(b.starType))
+                    {
+                        starCodes.Add(Util.flattenStarType(b.starType));
+                    }
+                }
+                this._withinGuardianBubble = withinGuardianBubble;
+                this._withinTubersBubble = withinTubersBubble;
+                this._hasWaterPlanet = hasWaterPlanet;
+                this._hasAmmoniaPlanet = hasAmmoniaPlanet;
+                this._starCodes = string.Join(",", starCodes);
+            }
+
+            return (this._withinGuardianBubble, this._withinTubersBubble, this._hasWaterPlanet, this._hasAmmoniaPlanet, this._starCodes!);
+        }
+
+        #endregion
+
         #region journal processing
 
         private SystemBody findOrCreate(string bodyName, int bodyId)
@@ -696,6 +765,10 @@ namespace SrvSurvey.game
                 // body.starSubClass = entry.Subclass; // needed ?
             }
             if (entry.Materials?.Count > 0) body.materials = entry.Materials.ToDictionary(_ => _.Name, _ => _.Percent);
+
+            // planetClass and/or starType may have just changed above - invalidate the
+            // cached water/ammonia/starCodes bio context so the next prediction recomputes it.
+            this.invalidateBioContext();
 
             if (entry.Rings != null)
             {

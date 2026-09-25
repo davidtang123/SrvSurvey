@@ -92,33 +92,8 @@ namespace BioCriterias
                 return null;
             }
 
-            // calc distance to nearest Guardian bubble
-            bool withinGuardianBubble = Game.codexRef.isWithinGuardianBubble(body.system.starPos);
-            // calc distance to nearest Tubers bubble
-            bool withinTubersBubble = Game.codexRef.isWithinTubersBubble(body.system.starPos);
-
-            bool hasWaterPlanet = false;
-            bool hasAmmoniaPlanet = false;
-            var starCodes = new HashSet<string>();
-
-            foreach (var b in body.system.bodies)
-            {
-                var pc = b.planetClass;
-                if (pc != null)
-                {
-                    //Identify if the system contains a GG with water-based life, water giant, water world or earthlike world
-                    if (!hasWaterPlanet &&
-                            (pc.Contains("Water", StringComparison.OrdinalIgnoreCase) ||
-                             pc.StartsWith("Earth", StringComparison.OrdinalIgnoreCase)))
-                        hasWaterPlanet = true;
-                    //Ammonia world, or GG with ammonia life
-                    if (!hasAmmoniaPlanet &&
-                            pc.Contains("Ammonia", StringComparison.OrdinalIgnoreCase))
-                        hasAmmoniaPlanet = true;
-                }
-                if (b.type == SystemBodyType.Star && !string.IsNullOrEmpty(b.starType))
-                    starCodes.Add(Util.flattenStarType(b.starType));
-            }
+            // Use cached system data when possible for the following values that only need to be computed once per system
+            var (withinGuardianBubble, withinTubersBubble, hasWaterPlanet, hasAmmoniaPlanet, starCodes) = body.system.getBioContext();
 
             // when there is a single entry - force that atmosphereComposition to 100% 
             var atmosphereComposition = body.atmosphereComposition?.ToDictionary(x => x.Key, x => x.Value);
@@ -150,7 +125,6 @@ namespace BioCriterias
                 { "HasWaterPlanet", hasWaterPlanet.ToString() },
                 { "HasWaterOrAmmoniaPlanet", (hasWaterPlanet || hasAmmoniaPlanet).ToString() },
                 { "HasStar", starCodes },
-
             };
             var predictor = new BioPredictor(body.name, bodyProps, targetVariant);
 
