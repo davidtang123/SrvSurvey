@@ -576,7 +576,7 @@ namespace SrvSurvey.game
         [JsonIgnore]
         private bool _hasAmmoniaPlanet;
         [JsonIgnore]
-        private string? _starCodes;
+        private List<string>? _starCodes;
 
         public void invalidateBioContext ()
         {
@@ -588,7 +588,7 @@ namespace SrvSurvey.game
         /// an ammonia planet, and the distinct set of flattened star type codes present anywhere
         /// in the system.
         /// </summary>
-        public (bool withinGuardianBubble, bool withinTubersBubble, bool hasWaterPlanet, bool hasAmmoniaPlanet, string starCodes) getBioContext()
+        public (bool withinGuardianBubble, bool withinTubersBubble, bool hasWaterPlanet, bool hasAmmoniaPlanet, List<string> starCodes) getBioContext()
         {
             if (this._starCodes == null)
             {
@@ -624,7 +624,7 @@ namespace SrvSurvey.game
                 this._withinTubersBubble = withinTubersBubble;
                 this._hasWaterPlanet = hasWaterPlanet;
                 this._hasAmmoniaPlanet = hasAmmoniaPlanet;
-                this._starCodes = string.Join(",", starCodes);
+                this._starCodes = starCodes;
             }
 
             return (this._withinGuardianBubble, this._withinTubersBubble, this._hasWaterPlanet, this._hasAmmoniaPlanet, this._starCodes!);
@@ -737,7 +737,9 @@ namespace SrvSurvey.game
                 body.terraformable = entry.TerraformState == "Terraformable";
             body.mass = entry.MassEM > 0 ? entry.MassEM : entry.StellarMass; // mass
             body.distanceFromArrivalLS = entry.DistanceFromArrivalLS;
+            body.orbitalPeriod = entry.OrbitalPeriod;
             body.semiMajorAxis = entry.SemiMajorAxis;
+            body.orbitalEccentricity = entry.Eccentricity;
             body.absoluteMagnitude = entry.AbsoluteMagnitude;
             body.radius = entry.Radius;
             body.parents = entry.Parents;
@@ -1434,7 +1436,9 @@ namespace SrvSurvey.game
                 if (body.type == SystemBodyType.SolidBody && entry.isLandable == true) body.type = SystemBodyType.LandableBody;
 
                 if (body.distanceFromArrivalLS == 0) body.distanceFromArrivalLS = entry.distanceToArrival;
+                if (body.orbitalPeriod == 0) body.orbitalPeriod = (entry.orbitalPeriod ?? 0);
                 if (body.semiMajorAxis == 0) body.semiMajorAxis = Util.lsToM(entry.semiMajorAxis ?? 0); // convert from LS to M
+                if (body.orbitalEccentricity == 0) body.orbitalEccentricity = (entry.orbitalEccentricity ?? 0);
                 if (body.absoluteMagnitude == 0) body.absoluteMagnitude = entry.absoluteMagnitude;
                 if (body.radius == 0 && entry.radius > 0) body.radius = entry.radius * 1000;
                 body.planetClass ??= getPlanetClassFromExternal(entry.subType);
@@ -2232,7 +2236,13 @@ namespace SrvSurvey.game
         public double distanceFromArrivalLS;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        public double orbitalPeriod;
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public double semiMajorAxis;
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        public double orbitalEccentricity;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public double absoluteMagnitude;
@@ -2390,6 +2400,27 @@ namespace SrvSurvey.game
             .ToList()
             ?? new();
 
+        private readonly struct OrbitLeg
+        {
+            public readonly double a;
+            public readonly double e;
+            public readonly double period;
+            public readonly bool isStar;
+            public readonly int? parentId;
+
+            public OrbitLeg(double a, double e, double period, bool isStar, int? parentId)
+            {
+                this.a = a;
+                this.e = Math.Min(Math.Max(e, 0), 0.999);
+                this.period = period;
+                this.isStar = isStar;
+                this.parentId = parentId;
+            }
+
+            // <1/r^2> contribution of this leg alone (eccentricity folded in exactly).
+            public double EffectiveA2 => a <= 0 ? 0 : a * a * Math.Sqrt(Math.Max(1 - e * e, 1e-6));
+        }
+
         public double getRelativeBrightness(SystemBody star)
         {
             if (star.starType == null)
@@ -2400,15 +2431,78 @@ namespace SrvSurvey.game
             }
 
             var commonParent = getCommonParent(star);
+            var legs = this.getLegsTo(commonParent);
+            legs.AddRange(star.getLegsTo(commonParent));
 
-            var dist1 = this.euclidianDistance(commonParent);
-            var dist2 = star.euclidianDistance(commonParent);
-            var distSquared = dist1 + dist2;
+            var meanInverseDistSquared = combineLegs(legs);
             if (!BioPredictor.runningBioTests)
-                Game.log($"Euclidian distance from {this.name} to {star.name}: {Math.Sqrt(distSquared)}");
+                Game.log($"Mean 1/d^2 from {this.name} to {star.name}: {meanInverseDistSquared:N10}");
+
             var temp2 = star.surfaceTemperature * star.surfaceTemperature;
             var radiusTemp2 = (double)star.radius * temp2;
-            return radiusTemp2 * radiusTemp2 / distSquared;
+            return radiusTemp2 * radiusTemp2 * meanInverseDistSquared; // L * <1/d^2>
+        }
+
+        private List<OrbitLeg> getLegsTo(SystemBody? target)
+        {
+            var legs = new List<OrbitLeg>();
+            if (target == this) return legs;
+
+            var current = this;
+            foreach (var parent in this.parentBodies)
+            {
+                legs.Add(new OrbitLeg(current.semiMajorAxis, current.orbitalEccentricity, current.orbitalPeriod,
+                    current.type == SystemBodyType.Star, parent.id));
+                if (parent.id == target?.id) break;
+                current = parent;
+            }
+            return legs;
+        }
+
+        private static List<OrbitLeg> mergeBinaryPairs(List<OrbitLeg> legs)
+        {
+            const double periodTolerance = 0.001; // 0.1%
+            var result = new List<OrbitLeg>(legs);
+
+            for (var i = 0; i < result.Count; i++)
+            {
+                if (!result[i].isStar || result[i].parentId == null || result[i].period <= 0) continue;
+
+                for (var j = i + 1; j < result.Count; j++)
+                {
+                    if (!result[j].isStar || result[j].parentId != result[i].parentId || result[j].period <= 0) continue;
+                    if (Math.Abs(result[i].period - result[j].period) > periodTolerance * result[i].period) continue;
+
+                    // Locked binary pair: opposite sides of the barycentre at all times, so their
+                    // separation from a 3rd body adds linearly rather than combining as independent phases.
+                    var merged = new OrbitLeg(result[i].a + result[j].a, result[i].e, result[i].period, true, result[i].parentId);
+                    result.RemoveAt(j);
+                    result.RemoveAt(i);
+                    result.Add(merged);
+                    return mergeBinaryPairs(result); // indices shifted; restart the scan
+                }
+            }
+            return result;
+        }
+
+        private static double combineLegs(List<OrbitLeg> rawLegs)
+        {
+            var legs = mergeBinaryPairs(rawLegs);
+            if (legs.Count == 0) return double.PositiveInfinity;
+
+            var effA2 = legs[0].EffectiveA2;
+            for (var i = 1; i < legs.Count; i++)
+            {
+                var next = legs[i].EffectiveA2;
+                var diff = Math.Abs(effA2 - next);
+                var scale = Math.Max(effA2, next);
+                // Two independent, near-equal orbits genuinely have a divergent <1/d^2> (they can
+                // pass arbitrarily close with non-negligible probability) — this isn't a numerical
+                // bug, it's the idealized-circular-orbit model breaking down exactly where ranking
+                // is hardest. Falling back to the larger leg keeps the result finite and usable.
+                effA2 = (scale <= 0 || diff < 1e-6 * scale) ? scale : diff;
+            }
+            return effA2 <= 0 ? 0 : 1.0 / effA2;
         }
 
         public SystemBody? getCommonParent(SystemBody sibling)

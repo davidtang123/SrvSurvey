@@ -2,6 +2,7 @@
 using SrvSurvey;
 using SrvSurvey.game;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace BioCriterias
@@ -24,6 +25,8 @@ namespace BioCriterias
 
         public static List<string> predict(SystemBody body)
         {
+            if (body.system.name == "HR 326")
+                ;
             var predictor = predict(body, null);
             return predictor?.predictions.ToList() ?? new();
         }
@@ -131,7 +134,7 @@ namespace BioCriterias
             // add known genus and species names
             if (body.organisms?.Count > 0)
             {
-                foreach (var org in body.organisms)
+                foreach (var org in body.organisms.ToList())
                 {
                     if (org.genus != null)
                     {
@@ -548,6 +551,7 @@ namespace BioCriterias
 
             var bioStats = pendingBioStats.Result;
             var systemData = SystemData.From(pendingSpanshDump.Result, fid, cmdr);
+            systemData.invalidateBioContext();//Invalidate bio context for testing purposes
 
             // force current region to be the one for this test
             var region = EliteDangerousRegionMap.RegionMap.FindRegion(systemData.starPos[0], systemData.starPos[1], systemData.starPos[2]);
@@ -679,7 +683,7 @@ namespace BioCriterias
 
 
             // *!* re-run just MISSED systems in series?
-            Debugger.Break();
+             Debugger.Break();
             if (newTestSystems.Count > 0 && !runInSeries)
                 await testSystemsAsync(true, newTestSystems);
         }
