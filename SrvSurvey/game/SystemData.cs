@@ -2569,6 +2569,9 @@ namespace SrvSurvey.game
 
             this.predictions.Clear();
             var knownRewards = 0L;
+            List<string>? bodyPredictions = null;// Store predictions if we have them so we don't have to do expensive recompute
+            List<string> getPredictions() => bodyPredictions ??= BioPredictor.predict(this);
+            var delta = this.bioSignalCount;
 
             // predict valid species within the genus ...
             if (this.organisms?.Count > 0)
@@ -2585,24 +2588,20 @@ namespace SrvSurvey.game
                     }
 
                     // otherwise predict within the genus
-                    var genusPredictions = BioPredictor.predict(this);
-                    foreach (var speciesName in genusPredictions)
+                    foreach (var speciesName in getPredictions())
                     {
                         var match = Game.codexRef.matchFromVariantDisplayName(speciesName);
                         if (match != null)
                             this.predictions[speciesName] = match.variant;
                     }
                 }
+                delta -= this.organisms.Count(o => o.species != null);
             }
 
             // predict the whole body if there are signals unaccounted for
-            var delta = this.bioSignalCount;
-            if (this.organisms?.Count > 0)
-                delta -= this.organisms.Count(o => o.species != null);
             if (delta > 0)
             {
-                var bodyPredictions = BioPredictor.predict(this);
-                foreach (var speciesName in bodyPredictions)
+                foreach (var speciesName in getPredictions())
                 {
                     var match = Game.codexRef.matchFromVariantDisplayName(speciesName);
                     if (match == null) continue;

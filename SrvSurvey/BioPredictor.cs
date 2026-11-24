@@ -37,8 +37,8 @@ namespace BioCriterias
             if (body.parents == null || body.parents.Count == 0) return null;
             lock (BioCriteria.allCriteria)
             {
-                if (BioCriteria.allCriteria.Count == 0 || (Debugger.IsAttached
-                    && !BioPredictor.runningBioTests) // *!* Comment when editing criteria files and tests SHOULD re-read every time (makes tests much slower)
+                if (BioCriteria.allCriteria.Count == 0/* || (Debugger.IsAttached
+                    && !BioPredictor.runningBioTests)*/ // *!* Uncomment when editing criteria files and tests SHOULD re-read every time (makes tests much slower)
                 ) BioCriteria.readCriteria();
             }
 
