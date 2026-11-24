@@ -25,8 +25,6 @@ namespace BioCriterias
 
         public static List<string> predict(SystemBody body)
         {
-            if (body.system.name == "HR 326")
-                ;
             var predictor = predict(body, null);
             return predictor?.predictions.ToList() ?? new();
         }
@@ -37,8 +35,8 @@ namespace BioCriterias
             if (body.parents == null || body.parents.Count == 0) return null;
             lock (BioCriteria.allCriteria)
             {
-                if (BioCriteria.allCriteria.Count == 0 || (Debugger.IsAttached
-                    && !BioPredictor.runningBioTests) // *!* Comment when editing criteria files and tests SHOULD re-read every time (makes tests much slower)
+                if (BioCriteria.allCriteria.Count == 0/* || (Debugger.IsAttached
+                    && !BioPredictor.runningBioTests)*/ // *!* Uncomment when editing criteria files and tests SHOULD re-read every time (makes tests much slower)
                 ) BioCriteria.readCriteria();
             }
 
