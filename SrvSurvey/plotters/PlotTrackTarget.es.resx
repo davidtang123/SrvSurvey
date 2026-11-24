@@ -61,8 +61,7 @@
   </resheader>
   <!--Localizable elements are below-->
   <data name="BearingTo">
-    <!--Machine translated-->
-    <value>Rodamiento: {0}</value>
+    <value>Rumbo: {0}</value>
     <comment>The bearing to a lat/long location
 {0} int, the heading in degrees</comment>
     <source>Bearing: {0}</source>
