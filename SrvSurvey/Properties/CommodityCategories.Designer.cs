@@ -19,7 +19,7 @@ namespace SrvSurvey.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class CommodityCategories {
@@ -72,9 +72,9 @@ namespace SrvSurvey.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Consumer Items.
         /// </summary>
-        internal static string ConsumerItems {
+        internal static string Consumer_Items {
             get {
-                return ResourceManager.GetString("ConsumerItems", resourceCulture);
+                return ResourceManager.GetString("Consumer Items", resourceCulture);
             }
         }
         
@@ -90,9 +90,18 @@ namespace SrvSurvey.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Industrial Materials.
         /// </summary>
-        internal static string IndustrialMaterials {
+        internal static string Industrial_Materials {
             get {
-                return ResourceManager.GetString("IndustrialMaterials", resourceCulture);
+                return ResourceManager.GetString("Industrial Materials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Legal Drugs.
+        /// </summary>
+        internal static string Legal_Drugs {
+            get {
+                return ResourceManager.GetString("Legal Drugs", resourceCulture);
             }
         }
         
@@ -129,24 +138,6 @@ namespace SrvSurvey.Properties {
         internal static string Minerals {
             get {
                 return ResourceManager.GetString("Minerals", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Narcotics.
-        /// </summary>
-        internal static string Narcotics {
-            get {
-                return ResourceManager.GetString("Narcotics", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Non-marketable.
-        /// </summary>
-        internal static string NonMarketable {
-            get {
-                return ResourceManager.GetString("NonMarketable", resourceCulture);
             }
         }
         

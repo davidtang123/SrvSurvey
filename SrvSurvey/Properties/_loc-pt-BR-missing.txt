@@ -351,10 +351,6 @@
 /plotters/PlotTrackers.pt-BR.resx
 	HeaderLine
 
-/plotters/PlotTrackTarget.pt-BR.resx
-	BearingTo
-	DistanceTo
-
 /Properties/Codex.pt-BR.resx
 	Aleoida
 	Amethyst

@@ -10,7 +10,6 @@
 
 /plotters/PlotBioSystem.es.resx
 	HasCanonnSignals
-	NotPredicted
 	CountRadicoidaUnica
 
 /plotters/PlotGuardians.es.resx
@@ -89,10 +88,6 @@
 	Header
 	NoNewLogs
 
-/plotters/PlotTrackTarget.es.resx
-	BearingTo
-	DistanceTo
-
 /Properties/Commodities.es.resx
 	AzCancriFormula42
 	KorroKungPellets
@@ -129,7 +124,6 @@
 	KaineMisinformation
 	KaineLobbyingMaterial
 	LavignyStrategicReports
-	Steel
 
 /Properties/FormRouteExtras.es.resx
 	ImportingAtlas

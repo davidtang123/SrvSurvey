@@ -28,7 +28,6 @@ There are some customizations in localized .resx files to make it easier to iden
   <data name="Alpha">
     <value>Альфа</value>
     <comment>Guardian Ruins type</comment>
-    <source>Alpha</source>
   </data>
 ```
 
@@ -39,19 +38,16 @@ Resources needing attention will have a proceeding comment. Consider these 3 res
     <!--Machine translated-->
     <value>Revolução</value>
     <comment>Faction state Revolution</comment>
-    <source>Revolution</source>
   </data>
 
   <data name="Service">
     <value>Servicio</value>
     <comment>Economy type Service</comment>
-    <source>Service</source>
   </data>
   
   <data name="$this.Text">
     <!--Update needed: RU-->
     <value>Сферический поиск</value>
-    <source>Spherical Search</source>
   </data>
 ```
 

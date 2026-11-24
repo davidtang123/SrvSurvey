@@ -271,10 +271,6 @@
 	NextSystem
 	NoDssMeet
 
-/plotters/PlotTrackTarget.fr.resx
-	BearingTo
-	DistanceTo
-
 /Properties/Codex.fr.resx
 	Amethyst
 	Amphora Plant

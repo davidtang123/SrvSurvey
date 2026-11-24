@@ -45,36 +45,30 @@
     <!--Machine translated-->
     <value>Verbündet</value>
     <comment>Your reputation with some faction</comment>
-    <source>Allied</source>
   </data>
   <data name="Cordial">
     <!--Machine translated-->
     <value>Wohlgesinnt</value>
     <comment>Your reputation with some faction</comment>
-    <source>Cordial</source>
   </data>
   <data name="Friendly">
     <!--Machine translated-->
     <value>Freundlich</value>
     <comment>Your reputation with some faction</comment>
-    <source>Friendly</source>
   </data>
   <data name="Hostile">
     <!--Machine translated-->
     <value>Feindlich</value>
     <comment>Your reputation with some faction</comment>
-    <source>Hostile</source>
   </data>
   <data name="Neutral">
     <!--Machine translated-->
     <value>Neutral</value>
     <comment>Your reputation with some faction</comment>
-    <source>Neutral</source>
   </data>
   <data name="Unfriendly">
     <!--Machine translated-->
     <value>Unfreundlich</value>
     <comment>Your reputation with some faction</comment>
-    <source>Unfriendly</source>
   </data>
 </root>

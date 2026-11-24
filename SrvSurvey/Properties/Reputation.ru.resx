@@ -44,31 +44,25 @@
   <data name="Allied">
     <value>Союзник</value>
     <comment>Your reputation with some faction</comment>
-    <source>Allied</source>
   </data>
   <data name="Cordial">
     <value>Приветливый</value>
     <comment>Your reputation with some faction</comment>
-    <source>Cordial</source>
   </data>
   <data name="Friendly">
     <value>Дружественный</value>
     <comment>Your reputation with some faction</comment>
-    <source>Friendly</source>
   </data>
   <data name="Hostile">
     <value>Враждебный</value>
     <comment>Your reputation with some faction</comment>
-    <source>Hostile</source>
   </data>
   <data name="Neutral">
     <value>Нейтральный</value>
     <comment>Your reputation with some faction</comment>
-    <source>Neutral</source>
   </data>
   <data name="Unfriendly">
     <value>Недружественный</value>
     <comment>Your reputation with some faction</comment>
-    <source>Unfriendly</source>
   </data>
 </root>

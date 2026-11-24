@@ -64,198 +64,165 @@
     <!--Machine translated-->
     <value>Alfa</value>
     <comment>Guardian Ruins type</comment>
-    <source>Alpha</source>
   </data>
   <data name="Beta">
     <!--Machine translated-->
     <value>Beta</value>
     <comment>Guardian Ruins type</comment>
-    <source>Beta</source>
   </data>
   <data name="BluePrintFighter">
     <!--Machine translated-->
     <value>Combatente</value>
     <comment>Blue print for a Fighter</comment>
-    <source>Fighter</source>
   </data>
   <data name="BluePrintModule">
     <!--Machine translated-->
     <value>Módulo</value>
     <comment>Blue print for a Module</comment>
-    <source>Module</source>
   </data>
   <data name="BluePrintWeapon">
     <!--Machine translated-->
     <value>Arma</value>
     <comment>Blue print for a Weapon</comment>
-    <source>Weapon</source>
   </data>
   <data name="Gamma">
     <!--Machine translated-->
     <value>Gama</value>
     <comment>Guardian Ruins type</comment>
-    <source>Gamma</source>
   </data>
   <data name="ItemBasilisk">
     <!--Machine translated-->
     <value>Basilisco</value>
     <comment>An item to match obelisk symbols, needed for a Ram Tah mission</comment>
-    <source>Basilisk</source>
   </data>
   <data name="ItemCasket">
     <!--Machine translated-->
     <value>Caixão</value>
     <comment>An item to match obelisk symbols, needed for a Ram Tah mission</comment>
-    <source>Casket</source>
   </data>
   <data name="ItemCyclops">
     <!--Machine translated-->
     <value>Ciclope</value>
     <comment>An item to match obelisk symbols, needed for a Ram Tah mission</comment>
-    <source>Cyclops</source>
   </data>
   <data name="ItemLink">
     <!--Machine translated-->
     <value>Link</value>
     <comment>An item to match obelisk symbols, needed for a Ram Tah mission</comment>
-    <source>Link</source>
   </data>
   <data name="ItemMedusa">
     <!--Machine translated-->
     <value>Medusa</value>
     <comment>An item to match obelisk symbols, needed for a Ram Tah mission</comment>
-    <source>Medusa</source>
   </data>
   <data name="ItemOrb">
     <!--Machine translated-->
     <value>Orbe</value>
     <comment>An item to match obelisk symbols, needed for a Ram Tah mission</comment>
-    <source>Orb</source>
   </data>
   <data name="ItemProbe">
     <!--Machine translated-->
     <value>Sondar</value>
     <comment>An item to match obelisk symbols, needed for a Ram Tah mission</comment>
-    <source>Probe</source>
   </data>
   <data name="ItemRelic">
     <!--Machine translated-->
     <value>Relíquia</value>
     <comment>An item to match obelisk symbols, needed for a Ram Tah mission</comment>
-    <source>Relic</source>
   </data>
   <data name="ItemSensor">
     <!--Machine translated-->
     <value>Sensor</value>
     <comment>An item to match obelisk symbols, needed for a Ram Tah mission</comment>
-    <source>Sensor</source>
   </data>
   <data name="ItemTablet">
     <!--Machine translated-->
     <value>Tabuleta</value>
     <comment>An item to match obelisk symbols, needed for a Ram Tah mission</comment>
-    <source>Tablet</source>
   </data>
   <data name="ItemTotem">
     <!--Machine translated-->
     <value>Totem</value>
     <comment>An item to match obelisk symbols, needed for a Ram Tah mission</comment>
-    <source>Totem</source>
   </data>
   <data name="ItemUrn">
     <!--Machine translated-->
     <value>Urna</value>
     <comment>An item to match obelisk symbols, needed for a Ram Tah mission</comment>
-    <source>Urn</source>
   </data>
   <data name="LogBiology">
     <!--Machine translated-->
     <value>Biologia</value>
     <comment>A category of log received in the first Ram Tah mission.</comment>
-    <source>Biology</source>
   </data>
   <data name="LogCulture">
     <!--Machine translated-->
     <value>Cultura</value>
     <comment>A category of log received in the first Ram Tah mission.</comment>
-    <source>Culture</source>
   </data>
   <data name="LogHistory">
     <!--Machine translated-->
     <value>História</value>
     <comment>A category of log received in the first Ram Tah mission.</comment>
-    <source>History</source>
   </data>
   <data name="LogLanguage">
     <!--Machine translated-->
     <value>Idioma</value>
     <comment>A category of log received in the first Ram Tah mission.</comment>
-    <source>Language</source>
   </data>
   <data name="LogTechnology">
     <!--Machine translated-->
     <value>Tecnologia</value>
     <comment>A category of log received in the first Ram Tah mission.</comment>
-    <source>Technology</source>
   </data>
   <data name="POIType_Component">
     <!--Machine translated-->
     <value>Torre de componentes</value>
     <comment>Those towers with 3 blastable panels</comment>
-    <source>Component tower</source>
   </data>
   <data name="POIType_Pylon">
     <!--Machine translated-->
     <value>Pilono</value>
     <comment>The things we shoot to charge up at Guardian structures</comment>
-    <source>Pylon</source>
   </data>
   <data name="Ruins">
     <!--Machine translated-->
     <value>Ruínas</value>
     <comment>As in a Guardian Ruins site</comment>
-    <source>Ruins</source>
   </data>
   <data name="SitePoiStatus_absent">
     <!--Machine translated-->
     <value>ausente</value>
     <comment>Display name for PoiSiteStatus enum</comment>
-    <source>absent</source>
   </data>
   <data name="SitePoiStatus_empty">
     <!--Machine translated-->
     <value>vazio</value>
     <comment>Display name for PoiSiteStatus enum</comment>
-    <source>empty</source>
   </data>
   <data name="SitePoiStatus_present">
     <!--Machine translated-->
     <value>presente</value>
     <comment>Display name for PoiSiteStatus enum</comment>
-    <source>present</source>
   </data>
   <data name="SitePoiStatus_unknown">
     <!--Machine translated-->
     <value>desconhecido</value>
     <comment>Display name for PoiSiteStatus enum</comment>
-    <source>unknown</source>
   </data>
   <data name="StatusUnknown">
     <!--Machine translated-->
     <value>desconhecido</value>
     <comment>The status of some site POI</comment>
-    <source>unknown</source>
   </data>
   <data name="Structure">
     <!--Machine translated-->
     <value>Estrutura</value>
     <comment>As in a Guardian Structure site</comment>
-    <source>Structure</source>
   </data>
   <data name="Unknown">
     <!--Machine translated-->
     <value>Desconhecido</value>
     <comment>Guardian site type is unknown</comment>
-    <source>Unknown</source>
   </data>
 </root>
