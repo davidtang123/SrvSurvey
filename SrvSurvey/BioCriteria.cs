@@ -201,7 +201,7 @@ namespace BioCriterias
             return clause;
         }
 
-        public static Clause createAll(string property, List<string> values)
+        public static Clause createAll(string property, IEnumerable<string> values)
         {
             var mappedValues = values.Select(v => Map.values.ContainsValue(v) ? Map.values.First(p => p.Value == v).Key : v);
 
@@ -210,7 +210,7 @@ namespace BioCriterias
                 raw = $"{property} [{string.Join(',', mappedValues)}]",
                 property = property,
                 op = Op.All,
-                values = values,
+                values = values.ToList(),
             };
             return clause;
         }

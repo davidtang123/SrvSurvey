@@ -116,6 +116,7 @@ namespace SrvSurvey.net.EDSM
         public double? orbitalEccentricity;
         public double? orbitalInclination;
         public double? argOfPeriapsis;
+        public double? ascendingNode;
         public double rotationalPeriod;
         public bool rotationalPeriodTidallyLocked;
         public double? axialTilt;

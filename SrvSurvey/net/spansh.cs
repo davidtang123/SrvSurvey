@@ -1164,7 +1164,12 @@ namespace SrvSurvey.net
                 public double? axialTilt;
                 public int bodyId;
                 public double? distanceToArrival;
+                public double? orbitalPeriod;
                 public double? semiMajorAxis;
+                public double? orbitalEccentricity;
+                public double? orbitalInclination;
+                public double? argOfPeriapsis;
+                public double? ascendingNode;
                 public long? id64;
                 public string luminosity;
                 public bool? mainStar;
