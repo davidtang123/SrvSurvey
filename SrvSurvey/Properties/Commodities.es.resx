@@ -339,7 +339,7 @@
     <source>Belalans Ray Leather</source>
   </data>
   <data name="Benitoite">
-    <value>Benitoíta</value>
+    <value>Benitoita</value>
     <comment>Commodity Benitoite</comment>
     <source>Benitoite</source>
   </data>
@@ -520,7 +520,7 @@
     <source>Consumer Technology</source>
   </data>
   <data name="CoolingHoses">
-    <value>Hornos microbianos</value>
+    <value>Conductos de refrigeración de microtejido</value>
     <comment>Commodity CoolingHoses</comment>
     <source>Micro-weave Cooling Hoses</source>
   </data>
@@ -626,7 +626,7 @@
     <source>Eleu Thermals</source>
   </data>
   <data name="EmergencyPowerCells">
-    <value>Células de Energía de Emergencia</value>
+    <value>Células de Energía Auxiliar</value>
     <comment>Commodity EmergencyPowerCells</comment>
     <source>Emergency Power Cells</source>
   </data>
@@ -1217,7 +1217,7 @@
     <source>Micro Controllers</source>
   </data>
   <data name="MilitaryGradeFabrics">
-    <value>Tejido de categoría mililtar</value>
+    <value>Tejido de categoría militar</value>
     <comment>Commodity MilitaryGradeFabrics</comment>
     <source>Military Grade Fabrics</source>
   </data>
@@ -1267,7 +1267,7 @@
     <source>Motrona Experience Jelly</source>
   </data>
   <data name="MukusubiiChitinOs">
-    <value>Quitiaros de Mukusubil</value>
+    <value>Quitiaros de Mukusubii</value>
     <comment>Commodity MukusubiiChitin_Os</comment>
     <source>Mukusubii Chitin-Os</source>
   </data>
@@ -1287,7 +1287,7 @@
     <source>Muon Imager</source>
   </data>
   <data name="MysteriousIdol">
-    <value>Idolo misterioso</value>
+    <value>Ídolo misterioso</value>
     <comment>Commodity MysteriousIdol</comment>
     <source>Mysterious Idol</source>
   </data>
@@ -1322,7 +1322,7 @@
     <source>Nerve Agents</source>
   </data>
   <data name="NgadandariFireOpals">
-    <value>Opalos ígneos de Ngadandari</value>
+    <value>Ópalos ígneos de Ngadandari</value>
     <comment>Commodity NgadandariFireOpals</comment>
     <source>Ngadandari Fire Opals</source>
   </data>
@@ -1838,7 +1838,7 @@
     <source>Telemetry Suite</source>
   </data>
   <data name="TerrainEnrichmentSystems">
-    <value>Enriquecimiento terrrestre</value>
+    <value>Sistemas de Enriquecimiento terrestre</value>
     <comment>Commodity TerrainEnrichmentSystems</comment>
     <source>Land Enrichment Systems</source>
   </data>
@@ -2080,7 +2080,7 @@
     <source>Thargoid Link</source>
   </data>
   <data name="UnknownBiologicalMatter">
-    <value>Materia Biológica Zargoide</value>
+    <value>Materia Biológica Thargoide</value>
     <comment>Commodity UnknownBiologicalMatter</comment>
     <source>Thargoid Biological Matter</source>
   </data>

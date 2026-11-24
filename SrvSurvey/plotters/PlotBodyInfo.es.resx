@@ -73,7 +73,7 @@
     <source>Bio signals: {0} ( value: {1} cr )</source>
   </data>
   <data name="EarthLike">
-    <value>Como la Tierra</value>
+    <value>Tipo Tierra</value>
     <comment>Atmosphere type is like Earth</comment>
     <source>Earth Like</source>
   </data>
@@ -83,7 +83,7 @@
     <source>First mapped</source>
   </data>
   <data name="GeoSignals">
-    <value>Señales geográficas: {0}</value>
+    <value>Señales geológicas: {0}</value>
     <comment>Line prefix when geo signals are present
 {0} int, count of geo signals</comment>
     <source>Geo signals: {0}</source>
